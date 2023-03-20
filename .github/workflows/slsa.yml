@@ -64,8 +64,9 @@ jobs:
         with:
           name: ${{ env.REPOSITORY_NAME }}.sha256
 
-      - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v3.1.2
+      - name: Upload To Github Release
+        uses: xresloader/upload-to-github-release@v1.3.11
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: ${{ env.REPOSITORY_NAME }}.sha256
-          path: ${{ env.REPOSITORY_NAME }}.sha256
+          file: ${{ env.REPOSITORY_NAME }}.sha256
