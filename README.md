@@ -3,10 +3,20 @@
 A basic Ansible role to update and configure an Ubuntu
 server.
 
-## Task list
+> **Note**
+>
+> Do not use this role without first testing in a non-operational environment.
+
+> **Note**
+>
+> There is a [SLSA](https://slsa.dev/) artifact present under the
+> [slsa action workflow](https://github.com/konstruktoid/ansible-role-hardening/actions/workflows/slsa.yml)
+> for verification.
+
+## Task list overview
 
 - Install local facts
-- Configure local facts and install python dependencies
+- Configure local facts and install Python dependencies
 - Configure package manager
 - Configure systemd timesyncd
 - Configure needrestart, install and remove various packages
