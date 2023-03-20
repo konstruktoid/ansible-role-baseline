@@ -1,0 +1,15 @@
+---
+galaxy_info:
+  role_name: baseline
+  author: konstruktoid
+  description: Ubuntu baseline installation
+  license: apache
+  min_ansible_version: "2.14"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+  galaxy_tags:
+    - systemd
+    - ubuntu

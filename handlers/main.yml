@@ -1,0 +1,57 @@
+---
+- name: Reload systemd
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Run rkhunter propupd
+  become: true
+  ansible.builtin.command: rkhunter --propupd
+
+- name: Run apt-get autoremove
+  become: true
+  ansible.builtin.apt:
+    autoremove: true
+
+- name: Run apt-get clean
+  become: true
+  ansible.builtin.apt:
+    autoclean: true
+    clean: true
+
+- name: Mask apport
+  become: true
+  ansible.builtin.systemd:
+    name: apport.service
+    masked: true
+    enabled: false
+    state: stopped
+
+- name: Mask motdnews timer
+  become: true
+  ansible.builtin.systemd:
+    name: motd-news.timer
+    masked: true
+    enabled: false
+    state: stopped
+
+- name: Mask motdnews service
+  become: true
+  ansible.builtin.systemd:
+    name: motd-news.service
+    masked: true
+    enabled: false
+    state: stopped
+
+- name: Enable haveged
+  become: true
+  ansible.builtin.systemd:
+    name: haveged
+    enabled: true
+    state: started
+
+- name: Reboot node
+  become: true
+  ansible.builtin.reboot:
+    pre_reboot_delay: "{{ 3600 | random(start=1) }}"
+...

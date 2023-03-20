@@ -1,0 +1,85 @@
+---
+- name: Create custom facts directory
+  become: true
+  ansible.builtin.file:
+    path: /etc/ansible/facts.d
+    recurse: true
+    state: directory
+    mode: "0755"
+    owner: root
+    group: root
+  tags:
+    - fact
+
+- name: Add systemd version fact
+  become: true
+  ansible.builtin.template:
+    src: etc/ansible/facts.d/systemd.fact
+    dest: /etc/ansible/facts.d/systemd.fact
+    mode: "0755"
+    owner: root
+    group: root
+  tags:
+    - fact
+    - systemd
+
+- name: Add cpuinfo rdrand fact
+  become: true
+  ansible.builtin.template:
+    src: etc/ansible/facts.d/cpuinfo.fact
+    dest: /etc/ansible/facts.d/cpuinfo.fact
+    mode: "0755"
+    owner: root
+    group: root
+  tags:
+    - cpuinfo
+    - fact
+    - rdrand
+
+- name: Add ssh keys fact
+  become: true
+  ansible.builtin.template:
+    src: etc/ansible/facts.d/sshkeys.fact
+    dest: /etc/ansible/facts.d/sshkeys.fact
+    mode: "0755"
+    owner: root
+    group: root
+  tags:
+    - fact
+    - sshd
+
+- name: Stat IPv6 status
+  become: true
+  ansible.builtin.stat:
+    path: /proc/sys/net/ipv6
+  register: stat_ipv6
+  tags:
+    - fact
+    - ipv6
+
+- name: Set IPv6 fact
+  ansible.builtin.set_fact:
+    system_has_ipv6: "{{ stat_ipv6.stat.exists }}"
+  tags:
+    - fact
+    - ipv6
+
+- name: Set sysctl configuration directory as fact
+  tags:
+    - fact
+    - sysctl
+  block:
+    - name: Stat /usr/lib/sysctl.d/ exists
+      ansible.builtin.stat:
+        path: "/usr/lib/sysctl.d/"
+      register: usr_lib_sysctl_d
+
+    - name: Set sysctl fact
+      ansible.builtin.set_fact:
+        sysctl_conf_dir: "{{ '/usr/lib/sysctl.d' if usr_lib_sysctl_d.stat.exists else '/etc/sysctl.d' }}"
+
+- name: Update current facts
+  ansible.builtin.setup: ~
+  tags:
+    - fact
+...

@@ -1,0 +1,90 @@
+---
+- name: Verify
+  hosts: all
+  any_errors_fatal: true
+
+  tasks:
+    - name: Reboot host
+      become: true
+      ansible.builtin.reboot:
+
+    - name: Wait for the host and reconnect
+      ansible.builtin.wait_for:
+        port: 22
+        host: '{{ (ansible_ssh_host | default(ansible_host)) | default(inventory_hostname) }}'
+        delay: 10
+        timeout: 120
+
+    - name: Include default vars
+      ansible.builtin.include_vars:
+        dir: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/"
+        extensions:
+          - 'yml'
+
+    - name: Include host vars
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_EPHEMERAL_DIRECTORY') }}/inventory/host_vars/{{ ansible_hostname }}"
+
+    - name: Verify sudo settings
+      ansible.builtin.shell: |
+        set -o pipefail
+        sudo -l | grep "{{ item }}"
+      register: sudo_settings
+      failed_when: sudo_settings.rc != 0
+      changed_when: sudo_settings.rc != 0
+      args:
+        executable: /bin/bash
+      with_items:
+        - 'use_pty'
+        - 'logfile="/var/log/sudo.log"'
+        - '!pwfeedback'
+        - '!visiblepw'
+        - 'passwd_timeout=1'
+        - 'timestamp_timeout=5'
+        - 'timestamp_type=tty'
+        - "!rootpw"
+        - "!runaspw"
+        - "!targetpw"
+
+    - name: Verify systemd timesyncd.conf
+      become: true
+      ansible.builtin.shell: grep "^{{ item }}$" /etc/systemd/timesyncd.conf
+      register: systemd_timesyncd_conf
+      failed_when: systemd_timesyncd_conf.rc != 0
+      changed_when: systemd_timesyncd_conf.rc != 0
+      with_items:
+        - NTP={{ ntp }}
+        - FallbackNTP={{ fallback_ntp }}
+      when: enable_timesyncd
+    - name: Stat /etc/default/motd-news
+      ansible.builtin.stat:
+        path: /etc/default/motd-news
+      register: motd_news
+
+    - name: Verify masked motdnews service
+      become: true
+      ansible.builtin.systemd:
+        name: motd-news.service
+        masked: true
+        enabled: false
+        state: stopped
+      check_mode: true
+      register: motdnews_service
+      failed_when: motdnews_service is changed
+      when: ansible_os_family == "Debian" and motd_news.stat.exists
+
+    - name: Stat /usr/bin/pro
+      ansible.builtin.stat:
+        path: /usr/bin/pro
+      register: ubuntu_advantage_pro
+
+    - name: Verify that apt_news is disabled
+      ansible.builtin.shell: |
+        set -o pipefail
+        pro config show | grep '^apt_news.*False'
+      args:
+        executable: /bin/bash
+      register: ubuntu_advantage_pro_state
+      changed_when: ubuntu_advantage_pro_state.rc != 0
+      failed_when: ubuntu_advantage_pro_state.rc != 0
+      when: ubuntu_advantage_pro.stat.exists

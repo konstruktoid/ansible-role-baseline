@@ -1,0 +1,49 @@
+#!/bin/bash
+
+set -euo pipefail
+
+TMPHOSTS01="$(mktemp)"
+TMPHOSTS02="$(mktemp)"
+TMPHOSTS03="$(mktemp)"
+
+echo "# $(date)" > "${TMPHOSTS01}"
+echo "# $(date)" > "${TMPHOSTS02}"
+
+{
+  curl -sSL "https://blocklistproject.github.io/Lists/abuse.txt" | grep '^0\.0\.0\.0'
+  curl -sSL "https://blocklistproject.github.io/Lists/ads.txt" | grep '^0\.0\.0\.0'
+  curl -sSL "https://blocklistproject.github.io/Lists/malware.txt" | grep '^0\.0\.0\.0'
+  curl -sSL "https://pgl.yoyo.org/adservers/serverlist.php?hostformat=hosts&mimetype=plaintext&useip=0.0.0.0" | grep '^0\.0\.0\.0'
+  curl -sSL "https://raw.githubusercontent.com/crazy-max/WindowsSpyBlocker/master/data/hosts/spy.txt" | grep '^0\.0\.0\.0'
+  curl -sSL "https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews/hosts" | grep '^0\.0\.0\.0'
+} >> "${TMPHOSTS01}"
+
+for company in apple huawei samsung windows xiaomi; do
+  for sites in $(curl -sSL "https://raw.githubusercontent.com/nextdns/native-tracking-domains/main/domains/${company}" | grep -vE '^#|^$' | strings | sort | uniq); do
+    echo "0.0.0.0 ${sites}" >> "${TMPHOSTS02}"
+  done
+done
+
+cat > "${TMPHOSTS03}"<< EOF
+127.0.0.1 local
+127.0.0.1 localhost
+127.0.0.1 localhost.localdomain
+127.0.1.1 $(hostname --short) $(hostname --fqdn)
+::1 localhost
+::1 ip6-localhost ip6-loopback
+fe80::1%lo0 localhost
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+ff02::3 ip6-allhosts
+EOF
+
+grep -h '^0\.0\.0\.0' "${TMPHOSTS01}" "${TMPHOSTS02}" | strings | sort | uniq >> "${TMPHOSTS03}"
+
+if command -v dos2unix 2>/dev/null 1>&2; then
+  dos2unix --quiet "${TMPHOSTS03}"
+fi
+
+cp "${TMPHOSTS03}" "/etc/hosts"
+rm "${TMPHOSTS01}" "${TMPHOSTS02}" "${TMPHOSTS03}"

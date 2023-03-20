@@ -1,0 +1,26 @@
+---
+system_upgrade: true
+packages_blocklist:
+  - apport*
+  - beep
+  - pastebinit
+  - popularity-contest
+  - prelink
+  - rpcbind
+  - rsh*
+  - talk*
+  - telnet*
+  - tftp*
+  - whoopsie
+  - xinetd
+  - yp-tools
+  - ypbind
+packages_installation:
+  - debsums
+  - gnupg2
+  - haveged
+  - libpam-tmpdir
+  - lsb-release
+  - needrestart
+  - unattended-upgrades
+...
