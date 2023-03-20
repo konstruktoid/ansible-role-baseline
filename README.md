@@ -10,7 +10,7 @@ server.
 > **Note**
 >
 > There is a [SLSA](https://slsa.dev/) artifact present under the
-> [slsa action workflow](https://github.com/konstruktoid/ansible-role-hardening/actions/workflows/slsa.yml)
+> [slsa action workflow](https://github.com/konstruktoid/ansible-role-baseline/actions/workflows/slsa.yml)
 > for verification.
 
 ## Task list overview
