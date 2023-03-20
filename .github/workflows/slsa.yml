@@ -64,8 +64,8 @@ jobs:
         with:
           name: ${{ env.REPOSITORY_NAME }}.sha256
 
-      - name: Upload asset
-        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v0.1.15
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v3.1.2
         with:
-          files: |
-            ${{ env.REPOSITORY_NAME }}.sha256
+          name: ${{ env.REPOSITORY_NAME }}.sha256
+          path: ${{ env.REPOSITORY_NAME }}.sha256
