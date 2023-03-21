@@ -56,6 +56,7 @@
         - NTP={{ ntp }}
         - FallbackNTP={{ fallback_ntp }}
       when: enable_timesyncd
+
     - name: Stat /etc/default/motd-news
       ansible.builtin.stat:
         path: /etc/default/motd-news
@@ -71,7 +72,7 @@
       check_mode: true
       register: motdnews_service
       failed_when: motdnews_service is changed
-      when: ansible_os_family == "Debian" and motd_news.stat.exists
+      when: motd_news.stat.exists
 
     - name: Stat /usr/bin/pro
       ansible.builtin.stat:
@@ -88,3 +89,9 @@
       changed_when: ubuntu_advantage_pro_state.rc != 0
       failed_when: ubuntu_advantage_pro_state.rc != 0
       when: ubuntu_advantage_pro.stat.exists
+
+    - name: Ensure esm pro apt hook is removed
+      ansible.builtin.stat:
+        path: /etc/apt/apt.conf.d/20apt-esm-hook.conf
+      register: esm_pro_apt
+      failed_when: esm_pro_apt.stat.exists

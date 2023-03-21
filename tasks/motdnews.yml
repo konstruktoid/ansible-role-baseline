@@ -85,4 +85,12 @@
   tags:
     - apt_news
     - ubuntu-pro
+
+- name: Remove pro esm apt hook
+  become: true
+  ansible.builtin.file:
+    dest: /etc/apt/apt.conf.d/20apt-esm-hook.conf
+    state: absent
+  tags:
+    - ubuntu-pro
 ...
