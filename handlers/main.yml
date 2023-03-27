@@ -4,10 +4,6 @@
   ansible.builtin.systemd:
     daemon_reload: true
 
-- name: Run rkhunter propupd
-  become: true
-  ansible.builtin.command: rkhunter --propupd
-
 - name: Run apt-get autoremove
   become: true
   ansible.builtin.apt:

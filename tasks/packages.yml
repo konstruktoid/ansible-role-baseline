@@ -52,6 +52,8 @@
     name: "{{ packages_installation }}"
     state: present
     install_recommends: false
+  notify:
+    - Enable haveged
   tags:
     - packages
     - CIS-UBUNTU2004-1.6.1.1
