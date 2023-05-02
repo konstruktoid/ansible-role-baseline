@@ -80,6 +80,7 @@
       register: ubuntu_advantage_pro
 
     - name: Verify that apt_news is disabled
+      become: true
       ansible.builtin.shell: |
         set -o pipefail
         pro config show | grep '^apt_news.*False'
@@ -91,6 +92,7 @@
       when: ubuntu_advantage_pro.stat.exists
 
     - name: Ensure esm pro apt hook is removed
+      become: true
       ansible.builtin.stat:
         path: /etc/apt/apt.conf.d/20apt-esm-hook.conf
       register: esm_pro_apt
