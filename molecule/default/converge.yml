@@ -3,6 +3,6 @@
   hosts: all
   any_errors_fatal: true
   tasks:
-    - name: "Include ansible-role-baseline"
+    - name: "Include Ansible role"
       ansible.builtin.include_role:
-        name: "ansible-role-baseline"
+        name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
