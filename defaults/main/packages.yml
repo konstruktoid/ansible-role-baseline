@@ -23,4 +23,3 @@ packages_installation:
   - lsb-release
   - needrestart
   - unattended-upgrades
-...

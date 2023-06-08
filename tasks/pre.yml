@@ -45,7 +45,7 @@
     - name: Python3-pip installation
       become: true
       ansible.builtin.package:
-        name: "python3-pip"
+        name: python3-pip
         state: present
       tags:
         - packages
@@ -54,7 +54,7 @@
     - name: Pip passlib installation
       become: true
       ansible.builtin.pip:
-        name: "passlib"
+        name: passlib
         state: present
       tags:
         - packages
@@ -65,4 +65,3 @@
     booted_with_efi: "{{ ansible_mounts | selectattr('mount', 'equalto', '/boot/efi') | list | length > 0 }}"
   tags:
     - fact
-...

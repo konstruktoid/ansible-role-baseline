@@ -26,4 +26,3 @@
 
 - name: Add issue message
   ansible.builtin.include_tasks: issue.yml
-...
