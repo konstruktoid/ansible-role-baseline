@@ -2,7 +2,7 @@
 - name: Configure apt
   become: true
   ansible.builtin.lineinfile:
-    dest: /etc/apt/apt.conf.d/98-hardening-ubuntu
+    path: /etc/apt/apt.conf.d/98-hardening-ubuntu
     mode: "0644"
     state: present
     create: true
