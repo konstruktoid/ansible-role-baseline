@@ -11,7 +11,7 @@
   ansible.builtin.lineinfile:
     regexp: ^ENABLED=
     line: ENABLED=0
-    dest: /etc/default/motd-news
+    path: /etc/default/motd-news
     mode: "0644"
     state: present
     create: false
@@ -35,7 +35,7 @@
 - name: Update motd permissions
   become: true
   ansible.builtin.file:
-    dest: "{{ item.path }}"
+    path: "{{ item.path }}"
     mode: "0444"
   with_items:
     - "{{ update_motd_permissions.files }}"
@@ -45,7 +45,7 @@
 - name: Set /etc/update-motd.d permission
   become: true
   ansible.builtin.file:
-    dest: /etc/update-motd.d
+    path: /etc/update-motd.d
     mode: "0755"
   tags:
     - motd
@@ -89,7 +89,7 @@
 - name: Remove pro esm apt hook
   become: true
   ansible.builtin.file:
-    dest: /etc/apt/apt.conf.d/20apt-esm-hook.conf
+    path: /etc/apt/apt.conf.d/20apt-esm-hook.conf
     state: absent
   tags:
     - ubuntu-pro

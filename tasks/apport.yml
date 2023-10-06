@@ -4,7 +4,7 @@
   ansible.builtin.lineinfile:
     regexp: ^enabled=
     line: enabled=0
-    dest: /etc/default/apport
+    path: /etc/default/apport
     mode: "0644"
     state: present
     create: false
