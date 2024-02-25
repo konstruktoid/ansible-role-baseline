@@ -1,37 +1,41 @@
 ---
 - name: Install local facts
-  ansible.builtin.include_tasks:
+  ansible.builtin.import_tasks:
     file: facts.yml
+  tags:
+    - always
 
 - name: Configure local facts and install python dependencies
-  ansible.builtin.include_tasks:
+  ansible.builtin.import_tasks:
     file: pre.yml
+  tags:
+    - always
 
 - name: Configure package manager
-  ansible.builtin.include_tasks:
+  ansible.builtin.import_tasks:
     file: packagemgmt.yml
 
 - name: Configure systemd timesyncd
-  ansible.builtin.include_tasks:
+  ansible.builtin.import_tasks:
     file: timesyncd.yml
-  when: enable_timesyncd
+  when: manage_timesyncd
 
 - name: Configure needrestart, install and remove various packages
-  ansible.builtin.include_tasks:
+  ansible.builtin.import_tasks:
     file: packages.yml
 
 - name: Configure apport
-  ansible.builtin.include_tasks:
+  ansible.builtin.import_tasks:
     file: apport.yml
 
 - name: Configure motdnews
-  ansible.builtin.include_tasks:
+  ansible.builtin.import_tasks:
     file: motdnews.yml
 
 - name: Configure sudo
-  ansible.builtin.include_tasks:
+  ansible.builtin.import_tasks:
     file: sudo.yml
 
 - name: Add issue message
-  ansible.builtin.include_tasks:
+  ansible.builtin.import_tasks:
     file: issue.yml

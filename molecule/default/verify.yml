@@ -53,9 +53,10 @@
       changed_when: false
       failed_when: systemd_timesyncd_conf.rc != 0
       with_items:
-        - NTP={{ ntp }}
-        - FallbackNTP={{ fallback_ntp }}
-      when: enable_timesyncd
+        - NTP={{ ntp | join(' ') }}
+        - FallbackNTP={{ fallback_ntp | join(' ') }}
+      when:
+        - manage_timesyncd
 
     - name: Stat /etc/default/motd-news
       ansible.builtin.stat:
@@ -72,7 +73,8 @@
       check_mode: true
       register: motdnews_service
       failed_when: motdnews_service is changed
-      when: motd_news.stat.exists
+      when:
+        - motd_news.stat.exists
 
     - name: Stat /usr/bin/pro
       ansible.builtin.stat:
@@ -89,7 +91,8 @@
       register: ubuntu_advantage_pro_state
       changed_when: ubuntu_advantage_pro_state.rc != 0
       failed_when: ubuntu_advantage_pro_state.rc != 0
-      when: ubuntu_advantage_pro.stat.exists
+      when:
+        - ubuntu_advantage_pro.stat.exists
 
     - name: Ensure esm pro apt hook is removed
       become: true

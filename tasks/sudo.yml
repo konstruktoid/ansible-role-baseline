@@ -1,8 +1,6 @@
 ---
 - name: Configure sudo
   become: true
-  tags:
-    - sudo
   block:
     - name: Configure sudo use_pty
       become: true
@@ -13,11 +11,8 @@
         state: present
         create: true
         validate: visudo -cf %s
-      tags:
-        - CIS-UBUNTU2004-5.2.2
 
     - name: Configure sudo logfile
-      become: true
       ansible.builtin.lineinfile:
         line: Defaults logfile="/var/log/sudo.log"
         path: /etc/sudoers.d/012_logfile
@@ -25,11 +20,8 @@
         state: present
         create: true
         validate: visudo -cf %s
-      tags:
-        - CIS-UBUNTU2004-5.2.3
 
     - name: Configure sudo disable pwfeedback
-      become: true
       ansible.builtin.lineinfile:
         line: Defaults !pwfeedback
         path: /etc/sudoers.d/013_pwfeedback
@@ -39,7 +31,6 @@
         validate: visudo -cf %s
 
     - name: Configure sudo disable visiblepw
-      become: true
       ansible.builtin.lineinfile:
         line: Defaults !visiblepw
         path: /etc/sudoers.d/014_visiblepw
@@ -49,13 +40,11 @@
         validate: visudo -cf %s
 
     - name: Remove inconsistently named sudoer file
-      become: true
       ansible.builtin.file:
         path: /etc/sudoers.d/15_timeout
         state: absent
 
     - name: Configure sudo passwd_timeout
-      become: true
       ansible.builtin.lineinfile:
         line: Defaults passwd_timeout=1
         path: /etc/sudoers.d/015_passwdtimeout
@@ -65,7 +54,6 @@
         validate: visudo -cf %s
 
     - name: Configure sudo timestamp_timeout
-      become: true
       ansible.builtin.lineinfile:
         line: Defaults timestamp_timeout=5
         path: /etc/sudoers.d/016_timestamptimeout
@@ -75,7 +63,6 @@
         validate: visudo -cf %s
 
     - name: Configure sudo timestamp_type
-      become: true
       ansible.builtin.lineinfile:
         line: Defaults timestamp_type=tty
         path: /etc/sudoers.d/017_timestamptype
@@ -83,11 +70,8 @@
         state: present
         create: true
         validate: visudo -cf %s
-      tags:
-        - M1028
 
     - name: Configure sudo user password for privilege escalation
-      become: true
       ansible.builtin.lineinfile:
         line: Defaults {{ item }}
         path: /etc/sudoers.d/018_userpassword
@@ -99,19 +83,12 @@
         - "!rootpw"
         - "!runaspw"
         - "!targetpw"
-      tags:
-        - V-237642
 
 - name: Create su group sugroup
   become: true
   ansible.builtin.group:
     name: sugroup
     state: present
-  tags:
-    - pam
-    - su
-    - sudo
-    - CIS-UBUNTU2004-5.7
 
 - name: Configure su group
   become: true
@@ -121,8 +98,3 @@
     mode: "0644"
     state: present
     create: true
-  tags:
-    - pam
-    - su
-    - sudo
-    - CIS-UBUNTU2004-5.7

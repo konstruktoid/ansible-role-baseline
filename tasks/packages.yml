@@ -1,17 +1,13 @@
 ---
 - name: Configure needrestart
-  tags:
-    - needrestart
-    - packages
+  become: true
   block:
     - name: Pre register needrestart configuration directory
-      become: true
       ansible.builtin.stat:
         path: /etc/needrestart/conf.d
       register: needrestart_directory_created
 
     - name: Create needrestart directory
-      become: true
       ansible.builtin.file:
         path: /etc/needrestart/conf.d
         state: directory
@@ -19,10 +15,11 @@
         group: root
         mode: "0755"
         recurse: true
-      when: ("needrestart" in packages_installation) and not needrestart_directory_created.stat.exists
+      when:
+        - ("needrestart" in packages_installation)
+        - not needrestart_directory_created.stat.exists
 
     - name: Stat needrestart configuration directory
-      become: true
       ansible.builtin.stat:
         path: /etc/needrestart/conf.d
       register: needrestart_directory
@@ -36,7 +33,6 @@
       failed_when: needrestart_restart_set.rc > 1
 
     - name: Configure needrestart
-      become: true
       ansible.builtin.lineinfile:
         path: /etc/needrestart/conf.d/00-restart.conf
         line: $nrconf{restart} = 'l';
@@ -44,7 +40,9 @@
         owner: root
         group: root
         mode: "0644"
-      when: needrestart_directory.stat.exists and needrestart_restart_set.rc != 0
+      when:
+        - needrestart_directory.stat.exists
+        - needrestart_restart_set.rc != 0
 
 - name: Package installation
   become: true
@@ -54,13 +52,6 @@
     install_recommends: false
   notify:
     - Enable haveged
-  tags:
-    - packages
-    - CIS-UBUNTU2004-1.6.1.1
-    - CIS-UBUNTU2004-4.1.1.1
-    - CIS-UBUNTU2004-4.2.1.1
-    - M1049
-    - UBTU-20-010005
 
 - name: Ubuntu update-notifier-common package installation
   become: true
@@ -68,8 +59,6 @@
     package: update-notifier-common
     state: present
     install_recommends: false
-  tags:
-    - packages
 
 - name: Run apt purge
   become: true
@@ -78,10 +67,9 @@
     state: absent
     purge: true
   register: apt_purge
-  failed_when: apt_purge is not success and not "No package" in apt_purge.msg
-  tags:
-    - packages
-    - M1042
+  failed_when:
+    - apt_purge is not success
+    - not "No package" in apt_purge.msg
 
 - name: Generic package removal
   become: true
@@ -89,22 +77,9 @@
     name: "{{ packages_blocklist }}"
     state: absent
   register: package_removal
-  failed_when: package_removal is not success and not "No package" in package_removal.msg
-  tags:
-    - packages
-    - CCE-80873-3
-    - CCE-82182-7
-    - CCE-82184-3
-    - CCE-82436-7
-    - CIS-UBUNTU2004-1.1.23
-    - CIS-UBUNTU2004-1.5.3
-    - CIS-UBUNTU2004-2.1.3
-    - CIS-UBUNTU2004-2.1.16
-    - CIS-UBUNTU2004-2.2.2
-    - CIS-UBUNTU2004-2.2.3
-    - CIS-UBUNTU2004-2.2.4
-    - CIS-UBUNTU2004-2.2.6
-    - M1042
+  failed_when:
+    - package_removal is not success
+    - not "No package" in package_removal.msg
 
 - name: VirtualBox guest packages installation
   become: true
@@ -117,51 +92,41 @@
       - virtualbox-guest-dkms
       - virtualbox-guest-utils
   register: virtualbox_packages
-  when: ansible_virtualization_type == "VirtualBox"
-  failed_when: virtualbox_packages is not success and not "No package matching" in virtualbox_packages.msg
-  tags:
-    - packages
-    - virtualbox
+  when:
+    - ansible_virtualization_type == "VirtualBox"
+  failed_when:
+    - virtualbox_packages is not success
+    - not "No package matching" in virtualbox_packages.msg
 
 - name: VMWare package installation
   become: true
   ansible.builtin.package:
     name: open-vm-tools
     state: present
-  when: ansible_virtualization_type == "VMware"
-  tags:
-    - packages
-    - vmware
+  when:
+    - ansible_virtualization_type == "VMware"
 
 - name: QEMU package installation
   become: true
   ansible.builtin.package:
     name: qemu-guest-agent
     state: present
-  when: ansible_system_vendor == "QEMU"
-  tags:
-    - packages
-    - qemu
+  when:
+    - ansible_system_vendor == "QEMU"
 
 - name: Install rng-tools
   become: true
   ansible.builtin.package:
     name: rng-tools
     state: present
-  when: ansible_local.cpuinfo.rdrand
-  tags:
-    - rng-tools
-    - packages
-    - CCE-82968-9
+  when:
+    - ansible_local.cpuinfo.rdrand
 
 - name: Stat sysstat default
   become: true
   ansible.builtin.stat:
     path: /etc/default/sysstat
   register: default_sysstat
-  tags:
-    - packages
-    - sysstat
 
 - name: Enable sysstat
   become: true
@@ -173,15 +138,11 @@
     state: present
     create: false
     backrefs: true
-  when: default_sysstat.stat.exists
-  tags:
-    - packages
-    - sysstat
+  when:
+    - default_sysstat.stat.exists
 
 - name: Remove unneeded Debian dependencies
   become: true
   ansible.builtin.apt:
     autoclean: true
     autoremove: true
-  tags:
-    - packages

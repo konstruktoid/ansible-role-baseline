@@ -14,7 +14,5 @@
     - Mask apport
   failed_when:
     - default_apport.rc is defined
-    - default_apport.rc !=0
+    - default_apport.rc != 0
     - not default_apport.rc == 257
-  tags:
-    - apport

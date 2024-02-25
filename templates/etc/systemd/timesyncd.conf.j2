@@ -1,6 +1,6 @@
 # {{ ansible_managed }}
 
 [Time]
-NTP={{ ntp }}
-FallbackNTP={{ fallback_ntp }}
+NTP={{ ntp | join(' ') }}
+FallbackNTP={{ fallback_ntp | join(' ') }}
 RootDistanceMaxSec=1

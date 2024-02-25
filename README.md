@@ -64,9 +64,15 @@ packages_installation:
 ### ./defaults/main/timesyncd.yml
 
 ```yaml
-enable_timesyncd: true
-fallback_ntp: 2.ubuntu.pool.ntp.org 3.ubuntu.pool.ntp.org
-ntp: 0.ubuntu.pool.ntp.org 1.ubuntu.pool.ntp.org
+---
+manage_timesyncd: true
+
+fallback_ntp:
+  - ntp.netnod.se
+  - ntp.ubuntu.com
+ntp:
+  - 2.pool.ntp.org
+  - time.nist.gov
 ```
 
 If `enable_timesyncd: true` then configure systemd
