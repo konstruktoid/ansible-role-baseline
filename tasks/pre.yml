@@ -5,11 +5,8 @@
     package: python-pexpect
     state: present
     update_cache: true
-  when: ansible_python.version.major <= 2
-  tags:
-    - apt
-    - packages
-    - python
+  when:
+    - ansible_python.version.major <= 2
 
 - name: Install python3-pexpect
   become: true
@@ -17,11 +14,8 @@
     package: python3-pexpect
     state: present
     update_cache: true
-  when: ansible_python.version.major >= 3
-  tags:
-    - apt
-    - packages
-    - python
+  when:
+    - ansible_python.version.major >= 3
 
 - name: Install python3-passlib
   become: true
@@ -32,10 +26,6 @@
   failed_when:
     - python3_passlib.rc is defined
     - python3_passlib.rc != 0
-  tags:
-    - apt
-    - packages
-    - python
 
 - name: Install Python pip
   when:
@@ -47,21 +37,13 @@
       ansible.builtin.package:
         name: python3-pip
         state: present
-      tags:
-        - packages
-        - python
 
     - name: Pip passlib installation
       become: true
       ansible.builtin.pip:
         name: passlib
         state: present
-      tags:
-        - packages
-        - python
 
 - name: EFI or UEFI booting check
   ansible.builtin.set_fact:
     booted_with_efi: "{{ ansible_mounts | selectattr('mount', 'equalto', '/boot/efi') | list | length > 0 }}"
-  tags:
-    - fact
