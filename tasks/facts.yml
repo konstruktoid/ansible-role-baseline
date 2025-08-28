@@ -9,24 +9,6 @@
     owner: root
     group: root
 
-- name: Add systemd version fact
-  become: true
-  ansible.builtin.template:
-    src: etc/ansible/facts.d/systemd.fact
-    dest: /etc/ansible/facts.d/systemd.fact
-    mode: "0755"
-    owner: root
-    group: root
-
-- name: Add cpuinfo rdrand fact
-  become: true
-  ansible.builtin.template:
-    src: etc/ansible/facts.d/cpuinfo.fact
-    dest: /etc/ansible/facts.d/cpuinfo.fact
-    mode: "0755"
-    owner: root
-    group: root
-
 - name: Add ssh keys fact
   become: true
   ansible.builtin.template:

@@ -20,20 +20,27 @@
     - Unattended-Upgrade::Remove-Unused-Dependencies "true";
     - Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";
 
-- name: Run apt update
+- name: Run apt update and upgrade
   become: true
-  ansible.builtin.apt:
-    update_cache: true
-    cache_valid_time: 1800
-  notify:
-    - Run apt-get clean
-    - Run apt-get autoremove
+  block:
+    - name: Run apt update
+      ansible.builtin.apt:
+        update_cache: true
+      register: cache_updated
+      changed_when: false
+      until:
+        - cache_updated is success
 
-- name: Run apt upgrade
-  become: true
-  ansible.builtin.apt:
-    upgrade: safe
-  register: apt_upgrade_response
-  changed_when: apt_upgrade_response.stdout.find('0 upgraded') == -1
-  when:
-    - system_upgrade | bool
+    - name: Run apt upgrade
+      ansible.builtin.apt:
+        upgrade: safe
+      register: apt_upgrade_response
+      changed_when:
+        - "'0 upgraded, 0 newly installed, 0 to remove' not in apt_upgrade_response.stdout"
+      until:
+        - apt_upgrade_response is success
+      when:
+        - system_upgrade | bool
+      notify:
+        - Run apt-get clean
+        - Run apt-get autoremove

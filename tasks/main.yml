@@ -5,12 +5,6 @@
   tags:
     - always
 
-- name: Configure local facts and install python dependencies
-  ansible.builtin.import_tasks:
-    file: pre.yml
-  tags:
-    - always
-
 - name: Configure package manager
   ansible.builtin.import_tasks:
     file: packagemgmt.yml

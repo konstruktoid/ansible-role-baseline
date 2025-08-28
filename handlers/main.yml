@@ -40,13 +40,6 @@
     enabled: false
     state: stopped
 
-- name: Enable haveged
-  become: true
-  ansible.builtin.systemd:
-    name: haveged
-    enabled: true
-    state: started
-
 - name: Reboot node
   become: true
   ansible.builtin.reboot:

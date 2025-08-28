@@ -11,7 +11,7 @@
     - name: Wait for the host and reconnect
       ansible.builtin.wait_for:
         port: 22
-        host: "{{ (ansible_ssh_host | default(ansible_host)) | default(inventory_hostname) }}"
+        host: "{{ (ansible_facts.ssh_host | default(ansible_facts.host)) | default(inventory_hostname) }}"
         delay: 10
         timeout: 120
 
@@ -23,7 +23,7 @@
 
     - name: Include host vars
       ansible.builtin.include_vars:
-        file: "{{ lookup('env', 'MOLECULE_EPHEMERAL_DIRECTORY') }}/inventory/host_vars/{{ ansible_hostname }}"
+        file: "{{ lookup('env', 'MOLECULE_EPHEMERAL_DIRECTORY') }}/inventory/host_vars/{{ ansible_facts.hostname }}"
 
     - name: Verify sudo settings
       ansible.builtin.shell: |
