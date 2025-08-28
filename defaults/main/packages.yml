@@ -18,7 +18,6 @@ packages_blocklist:
 packages_installation:
   - debsums
   - gnupg2
-  - haveged
   - libpam-tmpdir
   - lsb-release
   - needrestart
